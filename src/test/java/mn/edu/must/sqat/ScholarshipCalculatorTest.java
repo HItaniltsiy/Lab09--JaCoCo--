@@ -17,6 +17,9 @@ class ScholarshipCalculatorTest {
     @Test void gpaEmptyArray() { assertThrows(IllegalArgumentException.class, () -> calculator.gpa(new double[]{})); }
     @Test void gpaGradeC() { assertEquals(2.0, calculator.gpa(new double[]{75})); }
     @Test void gpaGradeD() { assertEquals(1.0, calculator.gpa(new double[]{65})); }
+    @Test void zeroIterationIsRejected() { assertThrows(IllegalArgumentException.class, () -> calculator.gpa(new double[]{})); }
+    @Test void oneIterationGpa() { assertEquals(4.0, calculator.gpa(new double[]{95})); }
+    @Test void multipleIterationGpa() { assertEquals(2.5, calculator.gpa(new double[]{95, 85, 75, 65})); }
     @Test void gpaSwitchDefaultF() { assertEquals(0.0, calculator.gpa(new double[]{55})); }
     @Test void scholarshipHundred() { assertEquals(100, calculator.scholarship(3.9, 16, false)); }
     @Test void scholarshipHundredCreditConditionFalse() { assertEquals(70, calculator.scholarship(3.9, 14, false)); }
