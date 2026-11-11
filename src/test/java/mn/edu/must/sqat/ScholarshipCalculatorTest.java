@@ -5,6 +5,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ScholarshipCalculatorTest {
     private final ScholarshipCalculator calculator = new ScholarshipCalculator();
+    @Test void gradeBoundary60IsD() { assertEquals("D", calculator.letterGrade(60)); }
+    @Test void gradeBoundaryBelow60IsF() { assertEquals("F", calculator.letterGrade(59.99)); }
+    @Test void gradeBoundaryBelow70IsD() { assertEquals("D", calculator.letterGrade(69.99)); }
+    @Test void gradeBoundaryZeroIsF() { assertEquals("F", calculator.letterGrade(0)); }
+    @Test void gradeBoundaryHundredIsA() { assertEquals("A", calculator.letterGrade(100)); }
+    @Test void gradeBoundaryBelow90IsB() { assertEquals("B", calculator.letterGrade(89.99)); }
+    @Test void gradeBoundary90IsA() { assertEquals("A", calculator.letterGrade(90)); }
+
     @Test void gradeA() { assertEquals("A", calculator.letterGrade(95)); }
     @Test void gradeB() { assertEquals("B", calculator.letterGrade(85)); }
     @Test void gradeC() { assertEquals("C", calculator.letterGrade(75)); }
