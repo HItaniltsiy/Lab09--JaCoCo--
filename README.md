@@ -80,9 +80,9 @@ Lab09--JaCoCo--/
 | `gpa > 4` | `invalidGpaAboveFour` | `invalidCreditsBelowZero` |
 | `credits < 0` | `invalidCreditsBelowZero` | `scholarshipHundred` |
 | `hasViolation` | `scholarshipViolation` | `scholarshipHundred` |
-| `gpa >= 3.8` | `scholarshipHundred` | `scholarshipSeventy` |
+| `gpa >= 3.8` | `scholarshipHundred` | `scholarshipSeventy`, `scholarshipSeventyCreditConditionFalse` |
 | `credits >= 15` | `scholarshipHundred` | `scholarshipHundredCreditConditionFalse` |
-| `gpa >= 3.4` | `scholarshipSeventy` | `scholarshipFifty` |
+| `gpa >= 3.4` | `scholarshipSeventy` | `scholarshipFifty`, `scholarshipZeroBelowThreshold` |
 | `credits >= 12` | `scholarshipSeventy` | `scholarshipSeventyCreditConditionFalse` |
 | `gpa >= 3.0` | `scholarshipFifty` | `scholarshipZeroBelowThreshold` |
 
