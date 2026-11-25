@@ -1,10 +1,15 @@
-# Лаборатори №9 — JaCoCo код хамралт
+# Лаборатори №9 — Код хамралт: JaCoCo-гоор тестээ хөтлөх
 
-- Оюутны нэр: Өгөгдөөгүй
-- Оюутны код: B232270071 (локал Git тохиргооноос)
-- Орчин: Windows 11, OpenJDK 25.0.2, Maven 3.9.16
+- **Оюутан:** О. Доржсамбуу
+- **Оюутны код:** B232270071
+- **Хичээл:** F.CSA313 — Программ хангамжийн чанарын баталгаа ба тест
+- **Орчин:** Windows 11, PowerShell
 
-`java -version` гаралт:
+## Орчны хувилбар
+
+Төсөл Java 17 source compatibility-тэй. Локал орчинд OpenJDK 25.0.2, Maven 3.9.16, JUnit Jupiter 5.10.2, JaCoCo 0.8.14 ашигласан. JaCoCo 0.8.14 нь Java 25-ыг албан ёсоор дэмждэг ([JaCoCo өөрчлөлтийн түүх](https://www.jacoco.org/jacoco/trunk/doc/changes.html)).
+
+`java -version`:
 
 ```text
 openjdk version "25.0.2" 2026-01-20 LTS
@@ -12,7 +17,7 @@ OpenJDK Runtime Environment Temurin-25.0.2+10 (build 25.0.2+10-LTS)
 OpenJDK 64-Bit Server VM Temurin-25.0.2+10 (build 25.0.2+10-LTS, mixed mode, sharing)
 ```
 
-`mvn -version` гаралт:
+`mvn -version`:
 
 ```text
 Apache Maven 3.9.16 (2bdd9fddda4b155ebf8000e807eb73fd829a51d5)
@@ -22,25 +27,122 @@ Default locale: en_US, platform encoding: UTF-8
 OS name: "windows 11", version: "10.0", arch: "amd64", family: "windows"
 ```
 
-## A — Happy path ба эхний хэмжилт
+## Төслийн бүтэц
 
-Эхний таван хэвийн урсгалын тестээр Line хамралт 15/25 = **60.0%**, Branch хамралт 20/41 = **48.8%** байв (`results/jacoco-A.csv`). Тайланд шарласан хэсгүүдэд ангиллын босгууд болон тэтгэлгийн нөхцөлийн зарим үр дүн дутуу байсан. Улаан мөрүүдэд онооны бусад ангилал, хүчингүй оролт, сахилгын зөрчил болон GPA тооцооны зарим замд тест хүрээгүй байлаа.
+```text
+Lab09--JaCoCo--/
+├── pom.xml
+├── cfg.png                              # scholarship()-ийн CFG, ирмэг бүрт тестийн нэртэй
+├── cfg-all.png                          # гурван функцийн нэмэлт нийлмэл зураг
+├── cfg1_letterGrade().png               # letterGrade() CFG
+├── cfg2_gpa().png                       # gpa() CFG
+├── cfg3_scholarship().png                # scholarship() CFG
+├── src/main/java/mn/edu/must/sqat/
+│   └── ScholarshipCalculator.java
+├── src/test/java/mn/edu/must/sqat/
+│   └── ScholarshipCalculatorTest.java   # A–D үеийн тестүүд
+└── results/
+    ├── mvn-verify-A.txt
+    ├── jacoco-A.csv
+    ├── mvn-verify-B.txt
+    ├── jacoco-B.csv
+    ├── mvn-test-D-fail.txt
+    ├── mvn-verify-final.txt
+    └── jacoco-final.csv
+```
 
-## B — CFG ба 100% хамралт
+`target/` нь `.gitignore`-т орсон тул репод орохгүй.
 
-`cfg.png` нь `scholarship()` функцийн нөхцөл, салбар бүрийг харуулж, ирмэгүүдэд тестийн бодит методын нэрийг бичсэн. Branch ба Line хамралтыг 100% болгоход **23 тест** шаардсан (`results/mvn-verify-B.txt`). C үеийн давталтын гурван нэмэлт тест хамралтын тоог өсгөөгүй. `results/jacoco-B.csv`-д `BRANCH_MISSED = 0`, `LINE_MISSED = 0`.
+## Хэсэг A — Happy path ба эхний хэмжилт
 
-## C — Давталтын зааг
+Эхний таван хэвийн урсгалын тест бүгд амжилттай (`results/mvn-verify-A.txt`). JaCoCo-ийн эхний хэмжилт (`results/jacoco-A.csv`):
 
-`gpaNullArray` ба `gpaEmptyArray` нь 0 давталтын оролтуудыг `assertThrows`-оор шалгана; `oneIterationGpa` нь нэг дүнтэй, `multipleIterationGpa` нь олон дүнтэй массивыг шалгана. Нэмэлт `zeroIterationIsRejected` тест хоосон массивын алдааг давтан тодруулна. Хамралт өмнө нь 100% байсан тул эдгээр тестийн хамралтын хувь өсөхгүй ч давталтын 0/1/олон удаагийн ажиллагаа болон хоосон/null оролтын тодорхойлолтыг хамгаална.
+| Хэмжүүр | Хамрагдсан | Хамрагдаагүй | Нийт | Хамралт |
+|---|---:|---:|---:|---:|
+| Line | 15 | 10 | 25 | **60.0%** |
+| Branch | 20 | 21 | 41 | **48.8%** |
 
-## D — Хамралт 100% ч заагийн алдаа үлдсэн нь
+Шар ромбууд нь нөхцөлийн зөвхөн нэг үр дүнгээр явсан хэсгүүд байв. Үүнд `letterGrade()`-ийн бүх үнэлгээний зам, `gpa()`-ийн null/хоосон массив ба switch-ийн C/D/F/default тохиолдлууд, `scholarship()`-ийн зөрчил болон босго нөхцөлүүд орно. Улаан мөрүүдэд хүчингүй оноо, GPA, кредитийн exception зам болон тестэд хүрээгүй буцаалтын мөрүүд байлаа.
 
-`results/mvn-test-D-fail.txt`-д `ScholarshipCalculatorTest.gradeBoundary60IsD` тест унаж, `expected: <D> but was: <F>` гэж гарсан. `letterGrade` дахь `score > 60` харьцуулалтыг `score >= 60` болгон зассан; засварын commit нь `3633502` (`Fix letterGrade threshold: 60 is D per specification`).
+## Хэсэг B — CFG ба 100% хамралт
 
-Branch хамралт нь шийдвэрийн хоёр тал руу орсон эсэхийг хэмждэг болохоос харьцуулах заагийн яг аль тал зөв эсэхийг хэмждэггүй. `score > 60` болон `score >= 60` нь оноонууд зөвхөн 60-аас доош, дээш үед ижил салаануудыг туулж чадна. Ийм учраас бүх салаа хамрагдсан ч 60 дээрх спецификацийн алдаа илрээгүй. `letterGrade(60)` зэрэг заагийн тест л ялгааг илрүүлж, засварын дараа 33 тест бүгд амжилттай болсон (`results/mvn-verify-final.txt`). Эцсийн тайланд Branch ба Line-ийн missed тоо хоёулаа 0 (`results/jacoco-final.csv`).
+`cfg.png` нь `scholarship()`-ийн CFG-г харуулна. Нөхцөл тус бүрийг салгаж, ирмэг бүрт тестийн нэрийг байрлуулсан. Гурван функцийн нийлмэл зургийг нэмэлтээр `cfg-all.png`-д хадгалав.
 
-## Git явц ба AI тусламж
+![Scholarship-ийн CFG](cfg.png)
 
-Коммитын дараалал: A happy path → B бүрэн салбарын хамралт → C давталтын зааг → D алдааг илрүүлсэн тест → D засвар. AI туслахыг төслийн ажлын файл, тест, CFG болон тайланг бэлтгэхэд ашигласан; build болон JaCoCo тайланг Maven-оор ажиллуулж шалгасан.
+Тус тусын зураг: [letterGrade()](<cfg1_letterGrade().png>) · [gpa()](<cfg2_gpa().png>) · [scholarship()](<cfg3_scholarship().png>) · [гурван функцийн нийлмэл CFG](cfg-all.png).
 
+`cfg.png` болон томруулж үзэх `cfg3_scholarship().png` зурагт богино нөхцөл бүрийг тусдаа шийдвэрийн зангилаа болгон зурсан. Сум бүрийн `YES`/`NO` тэмдэглэгээний хамт тухайн ирмэгээр явдаг тестийн методын нэрийг зураг дээр нь бичсэн. Эдгээр нэрс нь `ScholarshipCalculatorTest` доторх методын нэртэй яг таарна:
+
+| Шийдвэрийн ирмэг | YES дээрх тест | NO дээрх тест |
+|---|---|---|
+| `gpa < 0` | `invalidGpaBelowZero` | `invalidGpaAboveFour` |
+| `gpa > 4` | `invalidGpaAboveFour` | `invalidCreditsBelowZero` |
+| `credits < 0` | `invalidCreditsBelowZero` | `scholarshipHundred` |
+| `hasViolation` | `scholarshipViolation` | `scholarshipHundred` |
+| `gpa >= 3.8` | `scholarshipHundred` | `scholarshipSeventy` |
+| `credits >= 15` | `scholarshipHundred` | `scholarshipHundredCreditConditionFalse` |
+| `gpa >= 3.4` | `scholarshipSeventy` | `scholarshipFifty` |
+| `credits >= 12` | `scholarshipSeventy` | `scholarshipSeventyCreditConditionFalse` |
+| `gpa >= 3.0` | `scholarshipFifty` | `scholarshipZeroBelowThreshold` |
+
+Бүрэн branch/line хамралтад нийт **23 тест** шаардсан: A үеийн 5 тест дээр B үеийн 18 тест нэмсэн (`results/mvn-verify-B.txt`). B үеийн тестүүд `letterGrade()`-ийн F/C/D ба хүчингүй оноо, `gpa()`-ийн null/хоосон массив ба switch-ийн бүх үр дүн, `scholarship()`-ийн гурван тусдаа `assertThrows`, зөрчил болон босго/кредитийн салбаруудыг шалгана.
+
+`results/jacoco-B.csv`:
+
+| Хэмжүүр | Хамрагдсан | Хамрагдаагүй | Хамралт |
+|---|---:|---:|---:|
+| Line | 25 | 0 | **100%** |
+| Branch | 41 | 0 | **100%** |
+
+## Хэсэг C — Давталтын заагийн тестүүд
+
+`gpa()`-ийн давталтын 0 / 1 / 2+ заагийг шалгасан:
+
+| Тохиолдол | Тестийн метод | Шалгалт |
+|---|---|---|
+| 0 оролт, хоосон массив | `gpaEmptyArray`, `zeroIterationIsRejected` | `assertThrows(IllegalArgumentException.class, ...)` |
+| 0 оролт, null | `gpaNullArray` | `assertThrows(IllegalArgumentException.class, ...)` |
+| 1 дүн | `oneIterationGpa` | `gpa([95]) == 4.0` |
+| 2+ дүн | `multipleIterationGpa` | `gpa([95, 85, 75, 65]) == 2.5` |
+
+Эдгээр нэмэлт тест хамралтын хувийг өсгөөгүй: Branch аль хэдийн 41/41, Line 25/25 байсан. Гэхдээ JaCoCo давталтын бие дор хаяж нэг удаа ажилласныг л харуулна; 0/1/олон элементийн үр дүн зөв эсэхийг эдгээр заагийн тестүүд шалгана.
+
+## Хэсэг D — Хамралт 100%, гэхдээ алдаа амьд
+
+`letterGrade()`-д 7 заагийн утгын тест нэмсэн: `60`, `59.99`, `69.99`, `0`, `100`, `89.99`, `90`. Нийт 33 тест ажилласан.
+
+`results/mvn-test-D-fail.txt`-д дараах тест унасан:
+
+```text
+ScholarshipCalculatorTest.gradeBoundary60IsD
+expected: <D> but was: <F>
+```
+
+**Шалтгаан ба засвар:** Спецификацид 60–69.99 оноо D байх ёстой. Код дахь `score > 60` нөхцөл яг 60 дээр F буцааж байсан тул `score >= 60` болгож зассан. Засвар тусдаа `5d2f3fa` commit-оор хадгалагдсан (`Fix letterGrade threshold: 60 is D per specification`).
+
+Засварын дараах `results/mvn-verify-final.txt`-д **33 тест бүгд амжилттай** (`BUILD SUCCESS`). `results/jacoco-final.csv`-ийн эцсийн хэмжилт:
+
+| Хэмжүүр | Хамрагдсан | Хамрагдаагүй | Хамралт |
+|---|---:|---:|---:|
+| Line | 25 | 0 | **100%** |
+| Branch | 41 | 0 | **100%** |
+
+## Гол дүгнэлт
+
+Branch хамралт 100% болсон ч `letterGrade(60)`-ийн алдаа үлдсэн. Учир нь `score > 60` ба `score >= 60` нь 60-аас бусад утгууд дээр ижил үнэн/худал салааг үүсгэж чадна. `letterGrade(65)` үнэн салаа, `letterGrade(50)` худал салааг хамруулсан тул JaCoCo хоёр салааг хоёуланг нь ногоон гэж тоолсон. Ялгаа зөвхөн зааг болох 60 дээр гарсан бөгөөд `gradeBoundary60IsD` тест алдааг илрүүлсэн. Иймээс хамралт нь тест хүрсэн мөр, салааг хэмждэг боловч гарсан үр дүн зөв эсэхийг баталдаггүй; спецификацид суурилсан заагийн тестээр нөхөх шаардлагатай.
+
+## Коммитын дараалал
+
+| Үе | Commit | Өөрчлөлт |
+|---|---|---|
+| A | `020f70a` | Happy path тест, эхний тайлан |
+| B | `f8b0c44` | Бүх салаа ба мөрийн хамралт |
+| C | `f46a162` | Давталтын заагийн тестүүд |
+| D — уналт | `fb7a7d5` | 60 онооны алдааг илрүүлэх тест ба гаралт |
+| D — засвар | `3633502` | `60`-ын харьцуулалтыг зассан |
+| CFG | `6788664` | Scholarship CFG-ийн ирмэгүүдэд тестийн нэр нэмсэн |
+
+## AI ашиглалтын тэмдэглэл
+
+AI туслахыг тест, CFG зураглал, тайлангийн эхийг бэлтгэж сайжруулахад ашигласан. Тестүүд болон JaCoCo тайланг Maven-аар бодитоор ажиллуулж шалгасан.
